@@ -8,4 +8,4 @@ require('./startup/ratelimit')(app);
 require('./startup/sanitization')(app);
 require('./startup/DBmanager')();
 app.listen(process.env.PORT)
-module.exports = { app };
+module.exports = app;
