@@ -14,13 +14,9 @@ const mongoose = require('mongoose')
         minlength: 2,
         maxlength: 255
       },
-      attachmentPath: String,
-    },
-    {
-      toJSON: { virtuals: true },
-      toObject: { virtuals: true }
+      attachmentPath: String
     }
   );
   
   const Activity = mongoose.model('Activity', activitySchema);
-  module.exports = Activity;
+  exports.Activity = Activity;

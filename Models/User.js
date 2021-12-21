@@ -1,18 +1,14 @@
 const mongoose = require('mongoose')
 const validator = require('validator');
-
+const bcrypt = require('bcrypt');
+const Joi = require('joi')
+const jwt = require('jsonwebtoken')
 
 /**
  * @module Models.User
  */
 
-const baseOptions = {
-    discriminatorKey: 'type', // our discriminator key
-    collection: 'User', // the name of our collection
-  };
-  
-  // Our Base schema: these properties will be shared with our "real" schemas
-  const User = mongoose.model('User', new mongoose.Schema({
+  const userSchema = new mongoose.Schema({
         username:{
             type:String,
             unique:[true,'this username is already used'],
@@ -23,8 +19,9 @@ const baseOptions = {
         password:{
             type:String,
             required:[true,"please provide your password"],
-            minlength: 2,
-            maxlength: 255
+            minlength: 8,
+            maxlength: 255,
+            select:false
         },
         passwordConfirm: {
             type: String,
@@ -63,29 +60,98 @@ const baseOptions = {
             min: '1-1-1900',
             max: '1-1-2010',
             required: [true, 'please provide your date of birth']
+        },
+        courses:[{
+          type: mongoose.Schema.Types.ObjectId,
+          ref:'Course'
+        }],
+        type:{
+          type: String,
+          enum: ['admin','learner','instructor'],
+          default: 'learner',
+          required: [true, 'please provide your type']
         }
-      }, baseOptions,
-    ),
-  );
+    });
+
+userSchema.pre('save', async function (next) {
+  // if password was not modified
+  if (!this.isModified('password')) return next();
+
+  // Hash the password with cost of 12
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
+});
+
+// userSchema.pre('save', function (next) {
+//   if (!this.isModified('password') || this.isNew) return next();
+
+//   /* istanbul ignore next */
+//   // to make sure the token is created after the password has been modified
+//   // because saving to the database is a bit slower than making the token
+//   this.passwordChangedAt = Date.now() - 1000;
+//   /* istanbul ignore next */
+//   next();
+// });
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.signToken = function () {
+  return jwt.sign(
+    {
+      id: this._id
+    },
+    process.env.JWT_SECRET_KEY,
+    {
+      expiresIn: process.env.JWT_VALID_FOR
+    }
+    );
+  };
   
-  const Instructor = User.discriminator('Instructor', new mongoose.Schema({
-    courses: [{ 
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'Course'
-    }],
-  }),
-);
+  const User = mongoose.model('User', userSchema);
 
-const Learner = User.discriminator('Learner', new mongoose.Schema({
-    courses: [{ 
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'Course'
-    }],
-  }),
-);
-
-const Admin = User.discriminator('Admin');
-
-const Guest = User.discriminator('Guest');
-
-module.exports = {User,Instructor,Learner,Admin,Guest};
+async function validateUser (user) {
+  const schema = Joi.object({
+    username: Joi.string()
+      .min(2)
+      .max(255)
+      .required(),
+    email: Joi.string()
+      .min(5)
+      .max(255)
+      .required()
+      .email(),
+    password: Joi.string()
+      .min(8)
+      .max(255)
+      .required(),
+    birthdate: Joi.date()
+      .greater('1-1-1900')
+      .less('1-1-2010')
+      .required(),
+    passwordConfirm: Joi.string()
+    .min(8)
+    .max(255),
+    lastName: Joi.string()
+    .min(2)
+    .max(255),
+    firstName: Joi.string()
+    .min(2)
+    .max(255),
+    type: Joi.string()
+      .valid('admin', 'instructor', 'learner')
+      .required()
+  });
+  try {
+    return await schema.validateAsync(user);
+  } catch (err) {
+    throw err;
+  }
+}
+exports.User = User
+exports.validate = validateUser
