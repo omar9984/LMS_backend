@@ -10,6 +10,7 @@ const mongoose = require('mongoose')
       name: {
         type: String,
         unique: [true, 'course name already exists'],
+        dropDups:true,
         required: [true, 'please provide a name for your course'],
         minlength: 2,
         maxlength: 255

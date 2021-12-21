@@ -23,6 +23,9 @@ exports.getLearner = catchAsync(async (req, res, next) => {
 // course id in req body with name course
 exports.addCourse = catchAsync(async (req,res) => {
 
+    let learner = await User.findById(req.params.id)
+    if (!learner) return res.status(404).json("learner not found!")
+    if (learner.courses.includes(req.body.course)) return res.status(400).json("Already enrolled")
     let learnerupdatedData = {
         $push:{
             courses:req.body.course
