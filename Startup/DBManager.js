@@ -22,8 +22,8 @@ module.exports = function () {
     mongoose
       .connect(DB, {
         useNewUrlParser: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
+        // useCreateIndex: true,
+        // useFindAndModify: false,
         useUnifiedTopology: true
       })
       .then(() => {
@@ -34,14 +34,15 @@ module.exports = function () {
         mongoose
           .connect(DBLocal, {
             useNewUrlParser: true,
-            useCreateIndex: true,
-            useFindAndModify: false,
+            //useCreateIndex: true
+            // useFindAndModify: false,
             useUnifiedTopology: true
           })
           .then(() => {
             console.log('DB connection successful! local');
           })
           .catch(err => {
+            console.log("failed to connect to db")
             process.exit();
           });
       });
