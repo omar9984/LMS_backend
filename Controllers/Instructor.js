@@ -1,45 +1,50 @@
-const {User} = require('../Models/User')
-const {Course} = require('../Models/Course')
-const {Activity} = require('../Models/Activity')
-const catchAsync = require('../Utils/catchAsync')
-const AppError = require('../Utils/appError')
-const APIFeatures = require('../Utils/apiFeatures');
+const { User } = require("../Models/User");
+const { Course } = require("../Models/Course");
+const { Activity } = require("../Models/Activity");
+const catchAsync = require("../Utils/catchAsync");
+const AppError = require("../Utils/appError");
+const APIFeatures = require("../Utils/apiFeatures");
 
 exports.getAllInstructors = catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(User.find({'type':'instructor'}), req.query);
-    const doc = await features.query;
-    // SEND RESPONSE
-    res.status(200).json(doc);
+  const features = new APIFeatures(
+    User.find({ type: "instructor" }),
+    req.query
+  );
+  const doc = await features.query;
+  // SEND RESPONSE
+  res.status(200).json(doc);
 });
 
 exports.getInstructor = catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(User.find({'type':'instructor','_id':req.params.id}), req.query);
-    const doc = await features.query;
-    // SEND RESPONSE
-    res.status(200).json(doc);
+  const features = new APIFeatures(
+    User.find({ type: "instructor", _id: req.params.id }),
+    req.query
+  );
+  const doc = await features.query;
+  // SEND RESPONSE
+  res.status(200).json(doc);
 });
 
+exports.createCourse = catchAsync(async (req, res, next) => {
+  const course = await Course.create({
+    name: req.body.name,
+    instructor: req.params.id,
+  });
 
-exports.createCourse = catchAsync(async (req,res,next) => {
-    const course = await Course.create({
-        name:req.body.name,
-        instructor:req.params.id,
-    })
+  if (!course) return res.status(400).json("can't create new course");
+  let updatedData = {
+    $push: {
+      courses: course._id,
+    },
+  };
+  const doc = await User.findByIdAndUpdate({ _id: req.params.id }, updatedData);
 
-    if(!course) return res.status(400).json("can't create new course")
-    let updatedData = {
-        $push:{
-            courses:course._id
-        }
-    }
-    const doc = await User.findByIdAndUpdate({_id: req.params.id},updatedData)
-    
-    if (!doc) {
-        return next(new AppError('No instructor found with that ID', 404));
-    }
+  if (!doc) {
+    return next(new AppError("No instructor found with that ID", 404));
+  }
 
-    res.status(200).json("created successfully");
-})
+  res.status(200).json("created successfully");
+});
 
 // exports.addSyllabus = catchAsync( async(req,res,next)=>{
 //     const course = await Course.findById(req.body.course)
@@ -74,11 +79,11 @@ exports.createCourse = catchAsync(async (req,res,next) => {
 //       .jpeg({ quality: 90 })
 //       .toBuffer();
 //     const imageType = sizeOf(decodedData).type;
-  
+
 //     // B) save the image with unique name to the following path
 //     const imageName = `${helper.randomStr(20)}-${Date.now()}.${imageType}`;
 //     const imagePath = path.resolve(`${__dirname}/../assets/images/users/`);
 //     await fs_writeFile(`${imagePath}/${imageName}`, decodedData);
-  
+
 //     return imageName;
 //   };
