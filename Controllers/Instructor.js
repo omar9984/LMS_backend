@@ -28,7 +28,7 @@ exports.getInstructor = catchAsync(async (req, res, next) => {
 exports.createCourse = catchAsync(async (req, res, next) => {
   const course = await Course.create({
     name: req.body.name,
-    instructor: req.params.id,
+    instructor: req.user.id,
   });
 
   if (!course) return res.status(400).json("can't create new course");

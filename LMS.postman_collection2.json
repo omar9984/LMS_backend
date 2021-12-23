@@ -1,202 +1,407 @@
 {
-    "info": {
-        "_postman_id": "a0372b95-4057-895d-2a08-a8fe48684b41",
-        "name": "LMS",
-        "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
-    },
-    "item": [
-        {
-            "name": "Instructor",
-            "item": [
-                {
-                    "name": "Get All",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "body": {
-                            "mode": "formdata",
-                            "formdata": []
-                        },
-                        "url": "http://localhost:8080/instructor/get"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get One",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "body": {
-                            "mode": "formdata",
-                            "formdata": []
-                        },
-                        "url": "http://localhost:8080/instructor/get/61c10f035c8b3c3c8d7f9941"
-                    },
-                    "response": []
-                }
-            ]
-        },
-        {
-            "name": "Learner",
-            "item": [
-                {
-                    "name": "Get All",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "body": {
-                            "mode": "raw",
-                            "raw": ""
-                        },
-                        "url": "http://localhost:8080/learner/get"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get One",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "body": {
-                            "mode": "formdata",
-                            "formdata": []
-                        },
-                        "url": "http://localhost:8080/learner/get/61c10fcf5c8b3c3c8d7f9948"
-                    },
-                    "response": []
-                }
-            ]
-        },
-        {
-            "name": "Course",
-            "item": [
-                {
-                    "name": "Get All",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "body": {
-                            "mode": "formdata",
-                            "formdata": []
-                        },
-                        "url": "http://localhost:8080/course/get"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get One",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "body": {
-                            "mode": "formdata",
-                            "formdata": []
-                        },
-                        "url": "http://localhost:8080/course/get/61c1172d8ebc21914a2c2b84"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Add Question",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n\t\"title\":\"asking about CH1\",\n\t\"author\":\"61c10fcf5c8b3c3c8d7f9948\",\n\t\"description\":\"why we have alpha\"\n}"
-                        },
-                        "url": "http://localhost:8080/course/add_question/61c1172d8ebc21914a2c2b84"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Add Reply",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n\t\"user\":\"61c10fcf5c8b3c3c8d7f9948\",\n\t\"reply\":\"I will hand it in today\"\n}"
-                        },
-                        "url": "http://localhost:8080/course/add_reply/61c1e976ccf5775034d0fb13"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Remove Question",
-                    "request": {
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n\t\"user\":\"61c10f035c8b3c3c8d7f9941\"\n}"
-                        },
-                        "url": "http://localhost:8080/course/remove_question/61c1e7ab9ddeea6b740bb098"
-                    },
-                    "response": []
-                }
-            ]
-        },
-        {
-            "name": "Auth",
-            "item": [
-                {
-                    "name": "Login",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Authorization",
-                                "value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYzE0YTJkOWZjYzJkODM5YWFjNWZhOSIsImlhdCI6MTY0MDA1NzM5MCwiZXhwIjoxNjQxNzg1MzkwfQ.6MOW6rchcDnp7Ocz655-xSkCvqRBSZrh_euZTE8xbJ4",
-                                "disabled": true
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n\t\"email\":\"test@test.com\",\n\t\"password\":\"12345678\"\n}"
-                        },
-                        "url": "http://localhost:8080/login"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Signup",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n\t\"username\":\"tarek\",\n\t\"email\":\"test@test.com\",\n\t\"passwordConfirm\":\"12345678\",\n\t\"password\":\"12345678\",\n\t\"type\":\"learner\",\n\t\"lastName\":\"farahat\",\n\t\"firstName\":\"omar\",\n\t\"birthdate\":\"03-02-1999\"\n}"
-                        },
-                        "url": "http://localhost:8080/signup"
-                    },
-                    "response": []
-                }
-            ]
-        }
-    ]
+	"info": {
+		"_postman_id": "91f7043b-93c9-445a-9351-d336cc5976f7",
+		"name": "LMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Instructor",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/instructor/get",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"instructor",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/instructor/get/61c10f035c8b3c3c8d7f9941",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"instructor",
+								"get",
+								"61c10f035c8b3c3c8d7f9941"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Learner",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/learner/get",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"learner",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/learner/get/61c10fcf5c8b3c3c8d7f9948",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"learner",
+								"get",
+								"61c10fcf5c8b3c3c8d7f9948"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Course",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/course/get",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"course",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/course/get/61c1172d8ebc21914a2c2b84",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"course",
+								"get",
+								"61c1172d8ebc21914a2c2b84"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Question",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\":\"asking about CH1\",\n\t\"author\":\"61c10fcf5c8b3c3c8d7f9948\",\n\t\"description\":\"why we have alpha\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/course/add_question/61c1172d8ebc21914a2c2b84",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"course",
+								"add_question",
+								"61c1172d8ebc21914a2c2b84"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Reply",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"user\":\"61c10fcf5c8b3c3c8d7f9948\",\n\t\"reply\":\"I will hand it in today\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/course/add_reply/61c1e976ccf5775034d0fb13",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"course",
+								"add_reply",
+								"61c1e976ccf5775034d0fb13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Question",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"user\":\"61c10f035c8b3c3c8d7f9941\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/course/remove_question/61c1e7ab9ddeea6b740bb098",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"course",
+								"remove_question",
+								"61c1e7ab9ddeea6b740bb098"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"let t=jsonData.token;\r",
+									"console.log(t)\r",
+									"pm.environment.set(\"token\", t);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYzE0YTJkOWZjYzJkODM5YWFjNWZhOSIsImlhdCI6MTY0MDA1NzM5MCwiZXhwIjoxNjQxNzg1MzkwfQ.6MOW6rchcDnp7Ocz655-xSkCvqRBSZrh_euZTE8xbJ4",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"islam@test.com\",\n\t\"password\":\"12345678\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\":\"islam\",\n\t\"email\":\"islam@test.com\",\n\t\"passwordConfirm\":\"12345678\",\n\t\"password\":\"12345678\",\n\t\"type\":\"instructor\",\n\t\"lastName\":\"Ahmed\",\n\t\"firstName\":\"Islam\",\n\t\"birthdate\":\"03-02-1999\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "check if authenticated",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/auth-ping",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth-ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
 }
