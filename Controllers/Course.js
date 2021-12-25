@@ -14,16 +14,17 @@ exports.getAllCourses = catchAsync(async (req, res) => {
 
 exports.getCourse = factory.getOne(Course);
 
+exports.getSeveralCourses = factory.getMany(Course);
+
+exports.getSeveralQuestions = factory.getMany(Question);
+
 exports.addQuestion = catchAsync(async (req,res) =>{
     // which course
     const course = await Course.findById(req.params.id)
     if (!course) return res.status(404).json("course not found")
     
     // if authorized or not (admin, my instructor, my learners)
-    if (!req.body.author){
-        return res.status(400).json("question should have author");
-    }
-    const user = await User.findById(req.body.author)
+    const user = await User.findById(req.user.id)
 
     if(!user) return res.status(404).json("user not found")
     
@@ -36,7 +37,7 @@ exports.addQuestion = catchAsync(async (req,res) =>{
     }
 
     let questionData = {
-        author:req.body.author,
+        author:req.user.id,
         title:req.body.title,
         description:req.body.description,
         course:req.params.id,
@@ -69,12 +70,12 @@ exports.deleteQuestion = catchAsync(async (req,res) =>{
     if (!course) return res.status(404).json("course not found")
     
     // if authorized or not (admin, my instructor, my learners)
-    if (!req.body.user) return res.status(400).json("please, add the user");
+    if (!req.user.id) return res.status(400).json("please, add the user");
 
-    const user = await User.findById(req.body.user)
+    const user = await User.findById(req.user.id)
     if (!user) return res.status(400).json("user not found");
     
-    if(!course.instructor.equals(req.body.user) && user.type != 'admin') return res.status(401).json("not authorized, Course belongs to another instructor");
+    if(!course.instructor.equals(user._id) && user.type != 'admin') return res.status(401).json("not authorized, Course belongs to another instructor");
     
     let updatedData = {
         $pull:{
@@ -106,11 +107,11 @@ exports.addReply = catchAsync(async (req,res) =>{
     const course = await Course.findById(question.course)
 
     // if authorized or not (admin, my instructor, my learners)
-    if (!req.body.user || !req.body.reply){
+    if (!req.user.id || !req.body.reply){
         return res.status(400).json("please, add the user and reply");
     }
 
-    const user = await User.findById(req.body.user)
+    const user = await User.findById(req.user.id)
 
     if(!user) return res.status(404).json("user not found")
     
@@ -124,7 +125,7 @@ exports.addReply = catchAsync(async (req,res) =>{
 
     let reply = {
         "description":req.body.reply,
-        "author":req.body.user
+        "author":req.user.id
     }
 
     let updatedData = {
