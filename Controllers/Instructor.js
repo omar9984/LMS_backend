@@ -2,7 +2,7 @@ const { User } = require("../Models/User");
 const { Course } = require("../Models/Course");
 const { Activity } = require("../Models/Activity");
 const catchAsync = require("../Utils/catchAsync");
-const factory = require('../Utils/handlerFactory');
+const factory = require("../Utils/handlerFactory");
 const AppError = require("../Utils/appError");
 const APIFeatures = require("../Utils/apiFeatures");
 
@@ -26,7 +26,7 @@ exports.getInstructor = catchAsync(async (req, res, next) => {
   res.status(200).json(doc);
 });
 
-exports.getSeveralInstructors = factory.getMany(User)
+exports.getSeveralInstructors = factory.getMany(User);
 
 exports.createCourse = catchAsync(async (req, res, next) => {
   const course = await Course.create({
@@ -40,7 +40,7 @@ exports.createCourse = catchAsync(async (req, res, next) => {
       courses: course._id,
     },
   };
-  const doc = await User.findByIdAndUpdate({ _id: req.params.id }, updatedData);
+  const doc = await User.findByIdAndUpdate({ _id: req.user.id }, updatedData);
 
   if (!doc) {
     return next(new AppError("No instructor found with that ID", 404));

@@ -7,6 +7,6 @@ router.use(auth.protect(true));
 router.get("/get", Instructor.getAllInstructors);
 router.get("/get/:id", Instructor.getInstructor);
 router.get("/get_many", Instructor.getSeveralInstructors);
-router.post("/add_course/:id", Instructor.createCourse);
+router.post("/add_course", Instructor.createCourse);
 
 module.exports = router;
