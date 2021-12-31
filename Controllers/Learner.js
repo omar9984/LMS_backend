@@ -108,8 +108,8 @@ exports.upgradeLearner = catchAsync( async (req,res) =>{
 })
 
 exports.exploreCourses = catchAsync(async(req,res)=>{
-    const learner = await User.find({type:"learner","_id":req.user.id})
+    const learner = await User.findOne({type:"learner","_id":req.user.id})
     if(!learner) res.status(404).json("learner not found!")
-    const courses = await Course.find({courses: {$nin:learner.courses}})
+    const courses = await Course.find({_id: {$nin:learner.courses}})
     res.status(200).json(courses)
 })

@@ -40,7 +40,7 @@ exports.createCourse = catchAsync(async (req, res, next) => {
       courses: course._id,
     },
   };
-  const doc = await User.findByIdAndUpdate({ _id: req.params.id }, updatedData);
+  const doc = await User.findByIdAndUpdate({ _id: req.user.id }, updatedData);
 
   if (!doc) {
     return next(new AppError("No instructor found with that ID", 404));
@@ -48,6 +48,18 @@ exports.createCourse = catchAsync(async (req, res, next) => {
 
   res.status(200).json("created successfully");
 });
+
+exports.addSyllabus = catchAsync(async(req,res)=>{
+    const course = await Course.findById(req.params.id);
+    if (!course) res.status(404).json("No course found!");
+    if (req.user.id != course.instructor){
+        res.status(401).json("Not Authorized, course has another instructor!")
+    }
+    // console.log("req: ",req)
+    console.log("*************************************name: ",req.body.name)
+    console.log("*************************************attachment: ",req.body.attachment)
+    res.status(200).send("OK!")
+})
 
 // exports.addSyllabus = catchAsync( async(req,res,next)=>{
 //     const course = await Course.findById(req.body.course)
