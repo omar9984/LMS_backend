@@ -16,6 +16,7 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  // User.updateMany({}, {$unset: {words:1}} , {multi: true});
   // validate with JOI as a first layer of validation
   await validate(req.body);
   // insert the user data in the database
@@ -24,7 +25,6 @@ exports.signup = catchAsync(async (req, res, next) => {
       "email",
       "password",
       "passwordConfirm",
-      "username",
       "birthdate",
       "type",
       "lastName",

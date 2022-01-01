@@ -9,13 +9,6 @@ const jwt = require("jsonwebtoken");
  */
 
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    unique: [true, "this username is already used"],
-    required: [true, "please provide your username"],
-    minlength: 2,
-    maxlength: 255,
-  },
   password: {
     type: String,
     required: [true, "please provide your password"],
@@ -135,7 +128,6 @@ const User = mongoose.model("User", userSchema);
 
 async function validateUser(user) {
   const schema = Joi.object({
-    username: Joi.string().min(2).max(255).required(),
     email: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(8).max(255).required(),
     birthdate: Joi.date().greater("1-1-1900").less("1-1-2010").required(),
