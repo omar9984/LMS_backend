@@ -5,6 +5,8 @@ const catchAsync = require("../Utils/catchAsync");
 const factory = require('../Utils/handlerFactory');
 const AppError = require("../Utils/appError");
 const APIFeatures = require("../Utils/apiFeatures");
+const fs = require('fs');
+const path = require('path');
 
 exports.getAllInstructors = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(
@@ -55,50 +57,35 @@ exports.addSyllabus = catchAsync(async(req,res)=>{
     if (req.user.id != course.instructor){
         res.status(401).json("Not Authorized, course has another instructor!")
     }
-    // console.log("req: ",req)
-    console.log("*************************************name: ",req.body.name)
-    console.log("*************************************attachment: ",req.body.attachment)
+
+    if(!req.file && !req.body.attachmentPath) {
+      res.status(400).json("No file or link attached")
+    }
+
+    if(req.file){
+
+      // Renaming file
+      const oldPath = path.resolve(`${__dirname}/../Resources/files/${req.file.filename}`);
+      const newPath = path.resolve(`${__dirname}/../Resources/files/${req.file.originalname}`);
+      fs.rename(oldPath, newPath, function(err) {
+        if ( err ) res.status(500).json("formatting file failed")
+      });
+      req.body.attachmentPath = `Resources/files/${req.file.originalname}`
+    }
+
+    const activity = await Activity.create({
+      name: req.body.name,
+      attachmentPath: req.body.attachmentPath
+    });
+  
+    if(!activity) res.status(500).json("creating Syllabus failed")
+
+    let updatedData = {
+      $push:{
+          syllabus:activity._id
+      }
+    }
+    
+    let doc = await Course.findByIdAndUpdate(course._id,updatedData)
     res.status(200).send("OK!")
 })
-
-// exports.addSyllabus = catchAsync( async(req,res,next)=>{
-//     const course = await Course.findById(req.body.course)
-//     if (!course) res.status(404).json("No course found!");
-//     if (req.params.id != course._id){
-//         res.status(401).json("Not Allowed!")
-//     }
-
-//     if (req.body.attachment){
-//         const url = `${req.protocol}://${req.get('host')}`;
-//         console.log("url: ",url)
-//         const attachment = req.body.attachment.replace(/^data:image\/[a-z]+;base64,/, '');
-//         // attachmentName = await exports.prepareAndSaveImage(
-//         // Buffer.from(image, 'base64'),
-//         // req.user
-//         // );
-//         // req.body.imageUrl = `${url}/api/v1/images/users/${imageName}`;
-//     }
-// })
-
-// exports.prepareAndSaveImage = async function prepareAndSaveImage (
-//     bufferImage,
-//     user
-//   ) {
-//     // A1) get image data like the width and height and extension
-//     const imageData = sizeOf(bufferImage);
-//     const imageSize = Math.min(imageData.width, imageData.height, 300);
-//     // A2) manipulate the image to be square
-//     const decodedData = await sharp(bufferImage)
-//       .resize(imageSize, imageSize, { kernel: 'cubic' })
-//       .toFormat('jpeg')
-//       .jpeg({ quality: 90 })
-//       .toBuffer();
-//     const imageType = sizeOf(decodedData).type;
-
-//     // B) save the image with unique name to the following path
-//     const imageName = `${helper.randomStr(20)}-${Date.now()}.${imageType}`;
-//     const imagePath = path.resolve(`${__dirname}/../assets/images/users/`);
-//     await fs_writeFile(`${imagePath}/${imageName}`, decodedData);
-
-//     return imageName;
-//   };
