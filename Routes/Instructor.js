@@ -10,7 +10,7 @@ router.get("/get", Instructor.getAllInstructors);
 router.get("/get/:id", Instructor.getInstructor);
 router.get("/get_many", Instructor.getSeveralInstructors);
 router.post("/add_course", Instructor.createCourse);
-router.delete("/remove_course", Instructor.removeCourse);
+router.put("/remove_course/:id", Instructor.removeCourse);
 router.post("/add_syllabus/:id", upload.single("file"), Instructor.addSyllabus);
 
 module.exports = router;

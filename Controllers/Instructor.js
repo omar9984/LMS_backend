@@ -54,14 +54,82 @@ exports.createCourse = catchAsync(async (req, res, next) => {
 });
 
 exports.removeCourse = catchAsync(async (req, res, next) => {
-  //
-  // const features = new APIFeatures(
-  //   User.find({ type: "instructor", _id: req.params.id }),
-  //   req.query
-  // );
-  // const doc = await features.query;
   // TODO: remove the course
+  // get the course
+  // get all the learners fof the course
+  // remove the course id from the learners array in every learner
+  console.log(
+    "==============================================================="
+  );
+
+  let course = await Course.findById(req.params.id);
+  if (!course) {
+    console.log("we cannot find course with id ", req.params.id);
+    res.status(404).json("we cannot find course with id " + req.params.id);
+  }
+  console.log("course", course);
+  let updated_users = await User.updateMany(
+    { _id: { $in: course.learners } },
+    {
+      $pull: {
+        courses: course._id,
+      },
+    }
+  );
+  await Course.deleteOne({ _id: course._id });
+
   res.status(200).json("removed successfully");
+
+  // let learners = await User.find({ _id: { $in: course.learners } });
+
+  // learners.forEach((learner) => {
+  //   console.log("learners", learner);
+  //   let updated_learner = await User.findOneAndUpdate(learner._id, {
+  //     $pull: {
+  //       courses: course._id,
+  //     },
+  //   });
+  //   if (!updated_learner) {
+  //     throw new Error("you ruined something");
+  //   }
+  // });
+  // // console.log("learners", learners);
+  return;
+  console.log("leave the course");
+  let learner = await User.findById(req.user.id);
+  if (!learner) return res.status(404).json("learner not found!");
+  if (!learner.courses.includes(req.params.id))
+    return res.status(400).json("Already Not Enrolled");
+  let learnerupdatedData = {
+    $pull: {
+      courses: req.params.id,
+    },
+  };
+  // TODO: make sure that its a learner
+  let learnerDoc = await User.findByIdAndUpdate(
+    { _id: req.user.id },
+    learnerupdatedData
+  );
+
+  if (!learnerDoc) {
+    return next(new AppError("No Learner found with that ID", 404));
+  }
+
+  let courseupdatedData = {
+    $pull: {
+      learners: req.user.id,
+    },
+  };
+  let courseDoc = await Course.findByIdAndUpdate(
+    { _id: req.params.id },
+    courseupdatedData
+  );
+
+  if (!courseDoc) {
+    return next(new AppError("No Course found with that ID", 404));
+  }
+
+  res.status(200).json("UnEnrolled successfully");
 });
 
 exports.addSyllabus = catchAsync(async (req, res) => {

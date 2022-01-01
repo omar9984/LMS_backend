@@ -33,7 +33,7 @@ exports.addCourse = catchAsync(async (req, res) => {
 
   let learner = await User.findById(req.user.id);
   if (!learner) return res.status(404).json("learner not found!");
-  if (learner.courses.includes(req.params.id))
+  if (learner.courses.includes(course._id))
     return res.status(400).json("Already enrolled");
   let learnerupdatedData = {
     $push: {
@@ -68,6 +68,7 @@ exports.addCourse = catchAsync(async (req, res) => {
 });
 
 exports.leaveCourse = catchAsync(async (req, res) => {
+  console.log("leave the course");
   let learner = await User.findById(req.user.id);
   if (!learner) return res.status(404).json("learner not found!");
   if (!learner.courses.includes(req.params.id))
