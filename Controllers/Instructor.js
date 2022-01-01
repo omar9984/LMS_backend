@@ -49,6 +49,16 @@ exports.createCourse = catchAsync(async (req, res, next) => {
   res.status(200).json("created successfully");
 });
 
+exports.removeCourse = catchAsync(async (req, res, next) => {
+  //
+  // const features = new APIFeatures(
+  //   User.find({ type: "instructor", _id: req.params.id }),
+  //   req.query
+  // );
+  // const doc = await features.query;
+  // TODO: remove the course
+  res.status(200).json("removed successfully");
+});
 // exports.addSyllabus = catchAsync( async(req,res,next)=>{
 //     const course = await Course.findById(req.body.course)
 //     if (!course) res.status(404).json("No course found!");
