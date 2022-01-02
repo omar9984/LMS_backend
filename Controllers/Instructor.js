@@ -8,6 +8,7 @@ const APIFeatures = require("../Utils/apiFeatures");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const { update } = require("lodash");
 const upload = multer({ dest: "Resources/files" });
 
 exports.getAllInstructors = catchAsync(async (req, res, next) => {
@@ -68,6 +69,8 @@ exports.removeCourse = catchAsync(async (req, res, next) => {
     res.status(404).json("we cannot find course with id " + req.params.id);
   }
   console.log("course", course);
+  // this shoud update for the instructors and learners alike
+  // TODO: the courses aren't removed from the instructor's courses's array
   let updated_users = await User.updateMany(
     { _id: { $in: course.learners } },
     {
@@ -76,6 +79,7 @@ exports.removeCourse = catchAsync(async (req, res, next) => {
       },
     }
   );
+  console.log("update users are ", updated_users);
   await Course.deleteOne({ _id: course._id });
 
   res.status(200).json("removed successfully");
