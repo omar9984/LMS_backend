@@ -25,13 +25,79 @@ exports.search = catchAsync(async (req, res, next) => {
 });
 
 exports.change_type = catchAsync(async (req, res, next) => {
+
+  // Check current user to be Admin
   if (req.user.type.toLowerCase() != "admin") {
     res.status(40).json({ error: "you are not authorized" });
     return;
   }
-  let new_user = await User.findByIdAndUpdate(req.body.id, {
-    type: req.body.type,
-  });
 
-  res.status(200).json(new_user);
+  // check if upgrading from learner to instructor
+  if (req.body.type == "instructor"){
+    const learner = await User.findById(req.body.id);
+
+    learner.courses.forEach(course => {
+      let courseUpdatedData = {
+        $pull: {
+          learners: req.body.id,
+        },
+      };
+      await Course.findByIdAndUpdate(
+        { _id: course._id },
+        courseUpdatedData
+      );
+    });
+
+    // changing instructor type
+    let updatedData = {
+      $set: {
+        type: "instructor",
+        courses: [],
+      },
+    };
+    learner = await User.findByIdAndUpdate(req.body.id, updatedData);
+  
+    if (!learner) {
+      res.status(500).json("upgrading failed!");
+    }
+    res.status(200).json("successfully upgraded");
+
+  } // check if downgrading from instructor to learner
+  else if (req.body.type == "learner"){
+    const instructor = await User.findById(req.body.id);
+
+    instructor.courses.forEach(course => {
+
+      // Removing course from learners' enrollement courses 
+      course.learners.forEach(learner => {
+        let learnerUpdatedData = {
+          $pull: {
+            courses: course._id,
+          },
+        };
+        await User.findByIdAndUpdate(
+          { _id: learner._id },
+          learnerUpdatedData
+        );
+      });
+
+      // Remove Course
+      await Course.findByIdAndRemove(course._id)
+    });
+
+    // changing learner type
+    let updatedData = {
+      $set: {
+        type: req.body.type,
+        courses: [],
+      },
+    };
+    instructor = await User.findByIdAndUpdate(req.body.id, updatedData);
+  
+    if (!instructor) {
+      res.status(500).json("downgrading failed!");
+    }
+    res.status(200).json("successfully downgraded");
+  }
+
 });
