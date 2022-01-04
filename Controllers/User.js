@@ -28,15 +28,15 @@ exports.change_type = catchAsync(async (req, res, next) => {
 
   // Check current user to be Admin
   if (req.user.type.toLowerCase() != "admin") {
-    res.status(40).json({ error: "you are not authorized" });
+    res.status(401).json({ error: "you are not authorized" });
     return;
   }
-
+  
   // check if upgrading from learner to instructor
   if (req.body.type == "instructor"){
     const learner = await User.findById(req.body.id);
-
-    learner.courses.forEach(course => {
+    
+    for (const course of learner.courses) {
       let courseUpdatedData = {
         $pull: {
           learners: req.body.id,
@@ -46,7 +46,7 @@ exports.change_type = catchAsync(async (req, res, next) => {
         { _id: course._id },
         courseUpdatedData
       );
-    });
+    };
 
     // changing instructor type
     let updatedData = {
@@ -55,35 +55,33 @@ exports.change_type = catchAsync(async (req, res, next) => {
         courses: [],
       },
     };
-    learner = await User.findByIdAndUpdate(req.body.id, updatedData);
+    let doc = await User.findByIdAndUpdate(req.body.id, updatedData);
   
-    if (!learner) {
+    if (!doc) {
       res.status(500).json("upgrading failed!");
     }
     res.status(200).json("successfully upgraded");
-
-  } // check if downgrading from instructor to learner
+  }
+    // check if downgrading from instructor to learner
   else if (req.body.type == "learner"){
     const instructor = await User.findById(req.body.id);
 
-    instructor.courses.forEach(course => {
-
+    for (const courseId of instructor.courses) {
+        
       // Removing course from learners' enrollement courses 
-      course.learners.forEach(learner => {
+      let course = await Course.findById(courseId)
+      for (const learner of course.learners) {
         let learnerUpdatedData = {
           $pull: {
-            courses: course._id,
+            courses: courseId,
           },
         };
-        await User.findByIdAndUpdate(
-          { _id: learner._id },
-          learnerUpdatedData
-        );
-      });
+        await User.findByIdAndUpdate(learner,learnerUpdatedData);
+      };
 
       // Remove Course
       await Course.findByIdAndRemove(course._id)
-    });
+    };
 
     // changing learner type
     let updatedData = {
@@ -92,9 +90,9 @@ exports.change_type = catchAsync(async (req, res, next) => {
         courses: [],
       },
     };
-    instructor = await User.findByIdAndUpdate(req.body.id, updatedData);
+    let doc = await User.findByIdAndUpdate(req.body.id, updatedData);
   
-    if (!instructor) {
+    if (!doc) {
       res.status(500).json("downgrading failed!");
     }
     res.status(200).json("successfully downgraded");
