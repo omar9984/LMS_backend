@@ -16,7 +16,7 @@ exports.getCourse = factory.getOne(Course);
 
 exports.getSeveralCourses = factory.getMany(Course);
 
-exports.getSeveralQuestions = factory.getMany(Question);
+exports.getSeveralQuestions = factory.getMany(Question, "replies.author");
 
 exports.addQuestion = catchAsync(async (req, res) => {
   // which course
@@ -63,7 +63,7 @@ exports.addQuestion = catchAsync(async (req, res) => {
     return res.status(500).json("request failed");
   }
 
-  res.status(200).json("created successfully");
+  res.status(200).json(question);
 });
 
 exports.deleteQuestion = catchAsync(async (req, res) => {
