@@ -1,5 +1,6 @@
 const { Course } = require("../Models/Course");
 const { Question } = require("../Models/Question");
+const { Activity } = require("../Models/Activity");
 const { User } = require("../Models/User");
 const catchAsync = require("../Utils/catchAsync");
 const APIFeatures = require("../Utils/apiFeatures");
@@ -17,6 +18,8 @@ exports.getCourse = factory.getOne(Course);
 exports.getSeveralCourses = factory.getMany(Course);
 
 exports.getSeveralQuestions = factory.getMany(Question);
+
+exports.getSeveralActivities = factory.getMany(Activity);
 
 exports.addQuestion = catchAsync(async (req, res) => {
   // which course
@@ -74,8 +77,6 @@ exports.deleteQuestion = catchAsync(async (req, res) => {
   if (!course) return res.status(404).json("course not found");
 
   // if authorized or not (admin, my instructor, my learners)
-  if (!req.user.id) return res.status(400).json("please, add the user");
-
   const user = await User.findById(req.user.id);
   if (!user) return res.status(400).json("user not found");
 
@@ -112,8 +113,8 @@ exports.addReply = catchAsync(async (req, res) => {
   const course = await Course.findById(question.course);
 
   // if authorized or not (admin, my instructor, my learners)
-  if (!req.user.id || !req.body.reply) {
-    return res.status(400).json("please, add the user and reply");
+  if (!req.body.reply) {
+    return res.status(400).json("please, add the reply");
   }
 
   const user = await User.findById(req.user.id);
