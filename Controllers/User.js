@@ -4,11 +4,33 @@ const { Activity } = require("../Models/Activity");
 const catchAsync = require("../Utils/catchAsync");
 const AppError = require("../Utils/appError");
 const APIFeatures = require("../Utils/apiFeatures");
+const _ = require("lodash")
+const bcrypt = require("bcrypt");
 // this  is the file were general info controllers are put that
 // relate to both learners and instructors
 exports.getMyProfile = catchAsync(async (req, res, next) => {
   res.status(200).json(req.user);
 });
+
+exports.updateMyProfile = catchAsync(async (req, res, next) => {
+  
+  let user = await User.findById(req.user.id)
+  let changed = _.pick(req.body.body,["firstName","lastName","password"])
+  if(changed.firstName == "") changed.firstName = user.firstName
+  if(changed.lastName == "") changed.lastName = user.lastName
+  if(changed.password == ""){
+    changed.password = user.password
+  }else{
+    if(changed.password.length < 8) res.status(400).json("password should be more than 8 characters")
+    changed.password = await bcrypt.hash(changed.password, 12);
+  }
+
+  let doc = await User.findByIdAndUpdate(req.user.id,changed)
+  if (!doc) res.status(500).json("failed to update")
+  res.status(200).json("updated successfully")
+
+});
+
 exports.search = catchAsync(async (req, res, next) => {
   let search_term = req.query.email || "*";
   delete console.log("search term is ", search_term);
