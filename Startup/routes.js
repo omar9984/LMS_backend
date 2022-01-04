@@ -25,6 +25,7 @@ module.exports = function (app) {
   app.use("/course", courseRouter);
   app.use("/learner", learnerRouter);
   app.use("/user", userRouter);
+  app.use("/Resources",express.static('Resources'))
   app.get("/auth-ping", auth.protect(true), (req, res) =>
     res.send("connected")
   );
