@@ -5,8 +5,11 @@ const catchAsync = require("../Utils/catchAsync");
 const factory = require("../Utils/handlerFactory");
 const AppError = require("../Utils/appError");
 const APIFeatures = require("../Utils/apiFeatures");
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
+const { update } = require("lodash");
+const upload = multer({ dest: "Resources/files" });
 
 exports.getAllInstructors = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(
@@ -51,41 +54,75 @@ exports.createCourse = catchAsync(async (req, res, next) => {
   res.status(200).json("created successfully");
 });
 
-exports.addSyllabus = catchAsync(async(req,res)=>{
-    const course = await Course.findById(req.params.id);
-    if (!course) res.status(404).json("No course found!");
-    if (req.user.id != course.instructor){
-        res.status(401).json("Not Authorized, course has another instructor!")
+exports.removeCourse = catchAsync(async (req, res, next) => {
+  // TODO: remove the course
+  // get the course
+  // get all the learners fof the course
+  // remove the course id from the learners array in every learner
+  console.log(
+    "==============================================================="
+  );
+
+  let course = await Course.findById(req.params.id);
+  if (!course) {
+    console.log("we cannot find course with id ", req.params.id);
+    res.status(404).json("we cannot find course with id " + req.params.id);
+  }
+  console.log("course", course);
+  // this shoud update for the instructors and learners alike
+  // TODO: the courses aren't removed from the instructor's courses's array
+  let updated_users = await User.updateMany(
+    { _id: { $in: course.learners } },
+    {
+      $pull: {
+        courses: course._id,
+      },
     }
+  );
+  console.log("update users are ", updated_users);
+  await Course.deleteOne({ _id: course._id });
 
-    if(!req.file && !req.body.attachmentPath) {
-      res.status(400).json("No file or link attached")
-    }
+  res.status(200).json("removed successfully");
+});
 
-    if(req.file){
+exports.addSyllabus = catchAsync(async (req, res) => {
+  const course = await Course.findById(req.params.id);
+  if (!course) res.status(404).json("No course found!");
+  if (req.user.id != course.instructor) {
+    res.status(401).json("Not Authorized, course has another instructor!");
+  }
 
-      // Renaming file
-      const oldPath = path.resolve(`${__dirname}/../Resources/files/${req.file.filename}`);
-      const newPath = path.resolve(`${__dirname}/../Resources/files/${req.file.originalname}`);
-      fs.rename(oldPath, newPath, function(err) {
-        if ( err ) res.status(500).json("formatting file failed")
-      });
-      req.body.attachmentPath = `Resources/files/${req.file.originalname}`
-    }
+  if (!req.file && !req.body.attachmentPath) {
+    res.status(400).json("No file or link attached");
+  }
 
-    const activity = await Activity.create({
-      name: req.body.name,
-      attachmentPath: req.body.attachmentPath
+  if (req.file) {
+    // Renaming file
+    const oldPath = path.resolve(
+      `${__dirname}/../Resources/files/${req.file.filename}`
+    );
+    const newPath = path.resolve(
+      `${__dirname}/../Resources/files/${req.file.originalname}`
+    );
+    fs.rename(oldPath, newPath, function (err) {
+      if (err) res.status(500).json("formatting file failed");
     });
-  
-    if(!activity) res.status(500).json("creating Syllabus failed")
+    req.body.attachmentPath = `Resources/files/${req.file.originalname}`;
+  }
 
-    let updatedData = {
-      $push:{
-          syllabus:activity._id
-      }
-    }
-    
-    let doc = await Course.findByIdAndUpdate(course._id,updatedData)
-    res.status(200).send("OK!")
-})
+  const activity = await Activity.create({
+    name: req.body.name,
+    attachmentPath: req.body.attachmentPath,
+  });
+
+  if (!activity) res.status(500).json("creating Syllabus failed");
+
+  let updatedData = {
+    $push: {
+      syllabus: activity._id,
+    },
+  };
+
+  let doc = await Course.findByIdAndUpdate(course._id, updatedData);
+  res.status(200).send("OK!");
+});
